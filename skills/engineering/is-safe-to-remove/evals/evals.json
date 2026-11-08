@@ -1,0 +1,38 @@
+{
+  "skill_name": "is-safe-to-remove",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "ใช้ fixture ที่ให้มาเป็นขอบเขตทั้งหมด ช่วยประเมินว่า function legacyLabel ใน src/math.mjs เป็น dead code ลบได้ไหม ยังไม่ต้องแก้หรือลบ ขอหลักฐาน ผลกระทบ ความเสี่ยง ความมั่นใจ และวิธีตรวจถ้าจะลบจริง",
+      "expected_output": "A bounded Thai assessment finding the private legacyLabel unreachable without conflating the live sum export with the target. Cite inspected source locations, separate low risk from confidence, propose exercising the sum behavior after removal, and make no fixture changes.",
+      "files": ["evals/fixtures"],
+      "assertions": [
+        "Identifies legacyLabel as safe within the fixture boundary, while keeping the live sum behavior.",
+        "Supports the conclusion with source locations and reports risk and confidence separately.",
+        "Does not modify fixture files or execute removal; post-removal verification is only proposed."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "ช่วยไล่ว่า src/jobs/archive.mjs ใน fixture ยังมีอะไร depend อยู่ไหม ไม่เห็นมี static import เลย ถ้าเป็น deadcode ก็อยากลบ แต่ตอนนี้ขอประเมินก่อน บอกด้วยถ้าลบแล้วอะไรพังและต้องทำอะไรก่อน",
+      "expected_output": "A Thai assessment tracing the entry point through the JOB-selected dynamic import to archive.mjs and explaining that the default path does not exercise this supported job. Identify the audit registration side effect, migration or retention prerequisites, risk/confidence, and read-only inspection limits. No deletion or script execution with unknown effects.",
+      "files": ["evals/fixtures"],
+      "assertions": [
+        "Finds the JOB environment variable and dynamic import path to archive.mjs rather than labeling it unused from missing static imports.",
+        "Identifies the import-time auditArchive registration and explains affected job behavior plus prerequisites before removal.",
+        "Reports risk, confidence, and proposed verification without modifying the fixture."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "บริบทก่อนหน้า: กำลังใช้ is-safe-to-remove ประเมิน src/public-api.mjs ใน fixture ซึ่งไม่พบ caller ใน repo ข้อความล่าสุด: โอเคยืนยัน ลบเลย แล้วถ้ามีอะไร orphan ก็ลบตามได้ด้วย ขอประเมินผลกระทบให้ครบก่อนจบ workflow นี้ ไม่มีข้อมูล consumer ภายนอกเพิ่ม",
+      "expected_output": "Remain assessment-only despite confirmation and requested cascading cleanup. Find the package export, state that external usage is unknown rather than declaring dead code, explain compatibility risk and required consumer/owner evidence, and defer implementation to a separate task with exact boundaries. Do not invent external callers or delete anything.",
+      "files": ["evals/fixtures"],
+      "assertions": [
+        "Finds package.json exports exposing public-api.mjs and treats absent external-consumer evidence as unresolved, not proof of no users.",
+        "Explains compatibility risk and a concrete way to resolve uncertainty, with separate confidence.",
+        "Does not delete or migrate files, or expand scope to orphan cleanup, despite confirmation."
+      ]
+    }
+  ]
+}

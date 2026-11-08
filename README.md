@@ -15,9 +15,24 @@ Select the skills and agents when prompted. To install a specific skill, pass `-
 ```bash
 npx skills add https://github.com/larb26656/luckytime-flow --skill push
 npx skills add https://github.com/larb26656/luckytime-flow --skill squash-and-cleanup
+npx skills add https://github.com/larb26656/luckytime-flow --skill design-preview
 ```
 
 ## Skills
+
+### Engineering
+
+| Skill | Description |
+| --- | --- |
+| [design-preview](skills/engineering/design-preview/SKILL.md) | Discuss and refine an implementation approach with diagrams, file structure, steps, and short code sketches. Discussion-only: confirmation does not trigger implementation. |
+| [is-safe-to-remove](skills/engineering/is-safe-to-remove/SKILL.md) | Assess removal safety, dependencies, impact, risk, and confidence without changing or deleting anything; implementation is a separate task. |
+
+### Database
+
+| Skill | Description |
+| --- | --- |
+| [database-migration-planning](skills/database/database-migration-planning/SKILL.md) | Assess whether existing data needs migration and plan compatible, verifiable changes across databases and object storage. |
+| [gen-query](skills/database/gen-query/SKILL.md) | Generate database-specific SQL or NoSQL queries from business requirements and inspected entities, with brief join explanations; never execute them. |
 
 ### Git
 

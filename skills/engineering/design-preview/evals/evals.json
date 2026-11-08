@@ -1,0 +1,29 @@
+{
+  "skill_name": "design-preview",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "อยากทำเว็บจองอุปกรณ์ให้คนในทีม ยังไม่มี repo และยังไม่ได้เลือก stack ขอคุยแนวทางก่อน ยังไม่ต้องทำ อยากเห็น flow กับโครงสร้างไฟล์คร่าว ๆ ก่อน ถ้ามีอะไรไม่ชัดให้เสนอสมมติฐานมาก่อนได้",
+      "expected_output": "A Thai overview with a meaningful flow, proposed file structure and responsibilities, labeled assumptions, future steps and checks, and focused questions. No project changes or unsolicited detailed implementation.",
+      "files": [],
+      "expectations": [
+        "Provides a useful overview with a coherent booking flow and proposed file responsibilities before an exhaustive interview.",
+        "Labels unresolved project or stack choices as assumptions rather than claiming an existing implementation.",
+        "Describes implementation steps and meaningful future acceptance checks without claiming they were executed.",
+        "Keeps project files unchanged and does not turn the preview into detailed implementation."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "บริบทการคุยก่อนหน้า: กำลังออกแบบเว็บจองอุปกรณ์ ยังไม่ได้สร้างไฟล์ ตกลงร่างไว้ว่า browser เรียก POST /reservations โดยตรง ให้ server ตรวจช่วงเวลาทับซ้อนก่อนบันทึก โครงสร้างที่เสนอคือ src/routes/reservations.ts และ src/services/reservations.ts โดยใช้ฐานข้อมูลเดิม ไม่มี queue ข้อความล่าสุดจาก user: โอเค ยืนยันตามแบบนี้ แต่ถ้าจะให้ส่งแจ้งเตือนหลังจองสำเร็จโดยไม่รอส่งเสร็จ ควรเปลี่ยนตรงไหน ขอ snippet signature สั้น ๆ ก็พอ ยังไม่ต้องไล่โค้ดทุกไฟล์",
+      "expected_output": "A focused Thai discussion updating only the affected notification flow and file responsibilities, with a short signature sketch and an explicit decision or assumption about delivery reliability. Preserve the existing reservation and overlap-check behavior. Confirmation must not trigger implementation or saving, and the snippet must not expand into complete code.",
+      "files": [],
+      "expectations": [
+        "Treats confirmation as agreement with the draft, not authorization to implement or save files.",
+        "Answers the notification follow-up without replaying the entire original proposal.",
+        "Preserves reservation persistence and overlap validation while explaining where asynchronous notification fits and its delivery tradeoff.",
+        "Provides a focused signature sketch without expanding into complete function bodies or file-by-file implementation."
+      ]
+    }
+  ]
+}

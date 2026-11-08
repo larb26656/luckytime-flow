@@ -1,0 +1,7 @@
+{
+  "name": "removal-assessment-fixture",
+  "version": "1.0.0",
+  "type": "module",
+  "exports": { ".": "./src/public-api.mjs" },
+  "scripts": { "start": "node src/main.mjs" }
+}
