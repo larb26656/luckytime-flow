@@ -1,84 +1,44 @@
 ---
 name: squash-and-cleanup
-description: Squash a completed work branch into a target branch, push, and clean up related branches after explicit plan confirmation. Use when asked to squash into main, merge and delete intermediate branches, or clean up branches after a squash merge, including Thai requests such as “เอาเข้า main แบบ squash” and “ลบ branch ระหว่างทาง”.
+description: Prepare a squash in an isolated worktree, then merge and clean up only after separate confirmations. Use for squash into main, merging and deleting intermediate branches, or cleanup after a squash, including “เอาเข้า main แบบ squash” and “ลบ branch ระหว่างทาง”.
 ---
 
 # Squash and cleanup
 
-## 1. Inspect without changing state
+Use two separately authorized states: **prepare** creates and tests a squash commit on a mirror branch in a new worktree; **finalize** integrates that exact commit only after another explicit confirmation. Worktrees share branch refs and repository configuration, so isolation does not eliminate ref races or side effects of test commands.
 
-Use read-only inspection to determine:
-- Repository, current branch, worktree status, and other worktrees.
-- Source branch and commit, target branch, remote URL, and current remote branch tips (`git ls-remote`). Resolve the target from the request or remote default branch rather than assuming `main`.
-- Changes and commits between target and source, repository verification commands, and a proposed Conventional Commit message based on the changes.
-- Local and remote cleanup candidates, with evidence connecting each to this work. Names alone are not evidence; inspect ancestry and unique commits.
+## Inspect and request prepare approval
 
-Before confirmation, do not fetch, stage, switch branches, merge, commit, push, delete branches, stash, reset, or run commands that write generated files. A request to invoke this skill is not approval of an unseen plan.
+Inspect without changing state: repository, all worktrees and their status; source branch and committed SHA; target branch, local and remote tips, remote URL and default branch (`git ls-remote`); changes and commits; applicable verification commands; proposed Conventional Commit message; candidate mirror branch name and unused worktree path. Resolve target from the request or remote default, not by assuming main. Identify cleanup candidates with ancestry and unique-commit evidence, not names alone.
 
-If the worktree is dirty, report the paths and pause. Preserve the user's changes rather than automatically staging or stashing them. Treat branches used by another worktree as protected.
+Before approval do not fetch, create branches or worktrees, stage, switch, merge, commit, push, delete, stash, reset, or run commands that write generated files. Report dirty paths. A dirty original worktree need not block prepare: preserve it and explicitly say only committed source content is included. Protect branches checked out in any worktree.
 
-For cleanup-only requests, inspect the completed merge/squash evidence and skip the merge workflow. Ordinary merged-branch detection is insufficient after a squash: use the recorded source/target commit pair from the completed operation, or equal source and target trees as evidence. Retain branches when integration cannot be established.
+Present the user, in their language, the exact source and target SHAs, remote, change summary, mirror branch and worktree path, squash and test commands, proposed commit message, potential cleanup names and evidence, retained branches, and risks. Explain prepare does not authorize integration, push, or cleanup. Ask for explicit approval of prepare using the host's question tool if available; otherwise ask in chat. If declined, change nothing. If inputs change, present a revised plan and obtain approval again.
 
-Completion: enough evidence to show an exact plan without modifying the repository.
+For cleanup-only requests skip prepare/finalize: inspect recorded source/target commit evidence of the completed squash or equal trees, verify the target commit is on the remote, show exact deletion candidates and obtain explicit approval before cleanup. Merged-branch detection alone is insufficient after squash; retain branches where integration cannot be established.
 
-## 2. Present the plan and wait for confirmation
+## Prepare
 
-Respond in the user's language with:
+Recheck source, target, remote tips, worktrees, mirror name and path against the approved plan. Stop if changed. Fetch the approved remote, verify the fetched target SHA equals the approved target, and stop on divergence or unreviewed local target commits. Create a new mirror branch at that exact target SHA with `git worktree add -b <mirror> <path> <target-sha>`; never switch or modify the original worktree. In the new worktree:
 
-```text
-Repository: <path>
-Source → target: <branch>@<sha> → <branch>@<sha>
-Changes: <brief summary>
-Steps:
-1. <fetch/update target safely>
-2. <squash source into target>
-3. <exact verification commands>
-4. <proposed Conventional Commit message>
-5. <push remote/target>
-6. <delete the listed branches only after successful push>
-Delete local: <explicit names + why each is safe, or none>
-Delete remote: <remote/name pairs + why each is safe, or none>
-Keep: <unrelated, uncertain, protected, or unique-work branches + reason>
-Risks/blockers: <dirty state, divergence, unverified branches, or none>
-Confirm this plan before I make changes?
-```
+1. Run `git merge --squash <source-sha>`. If empty, stop and report the retained worktree without committing. Inspect the staged diff and run `git diff --cached --check` and the approved verification commands. After tests and before committing, recheck the staged diff and worktree including untracked files; stop if tests changed the staged content or left unexpected files or changes.
+2. Commit once with `<type>(<optional-scope>): <imperative English description>` without a final period. Mark breaking changes with `!` and a `BREAKING CHANGE:` footer. If the actual scope or message materially differs, request a revised approval.
+3. Record source SHA, base target SHA, mirror commit SHA, worktree path, staged/committed diff, and observed verification results. Confirm the commit has exactly the approved target as parent and no uncommitted changes remain in the mirror worktree; test-generated changes must not be silently included.
 
-For cleanup-only requests, show only the applicable steps. Include all intended mutations, including deletion of any branch with unique commits. Retain such branches by default; removing them requires explaining the unique work and getting explicit approval for that branch.
+On conflict, failed test or mutation, stop, report the command and state including unmerged paths, and retain the worktree for inspection; do not reset, automatically resolve, commit, push or clean up. Do not modify target or push during prepare.
 
-Use the host's confirmation/question tool when available, after showing the plan. Otherwise ask in chat and end the turn. Wait for an explicit affirmative response to this plan. Cancellation or a requested revision makes no changes; present a revised plan when needed. A generic earlier approval does not authorize a later expanded deletion list.
+## Review and request finalize approval
 
-Completion: the user explicitly approves this exact plan.
+Show the exact prepared commit and parent, source and target SHAs, committed diff summary, actual test results, target integration and push method, and explicit cleanup list with reasons. Ask for a **new explicit approval** to finalize this exact commit and the listed operations. Prepare approval or a general prior approval is not finalize approval. If declined, leave the prepared worktree and branches intact. Any expanded deletion list requires fresh approval.
 
-## 3. Execute the approved merge
+## Finalize
 
-Recheck the worktree, source commit, and remote tips before mutating. If the inputs changed since approval, stop and present the changed plan for confirmation. The approved commit IDs bind the operation to reviewed content.
+Before and after approval, recheck the mirror commit, its parent, worktree cleanliness, source SHA, target local and remote tips and worktree occupancy. If any reviewed input changed, stop; if target advanced, prepare and test a new squash on the new base and obtain approvals again. Never merge an untested old-base commit.
 
-For a merge:
-1. Fetch the approved remote, then switch to the target branch. Bring it to the approved remote tip with a fast-forward-only update. Stop for divergence or unreviewed local target commits.
-2. Run `git merge --squash <source>`. This leaves changes staged without importing the source's commit history.
-3. Inspect the staged diff and run `git diff --cached --check`, then the approved verification commands. Observe their results. If the squash yields no changes, report it rather than creating an empty commit.
-4. Commit once using `<type>(<optional-scope>): <imperative English description>`, without a final period. Choose the type from the staged changes. Mark breaking changes with `!` and include a `BREAKING CHANGE:` footer when applicable. If the resulting diff requires a materially different message or scope, revise the plan first.
-5. Push the target normally to the approved remote. Do not force-push. Record the source SHA and the new target commit as evidence of the squash.
+Integrate the exact tested commit by fast-forward only. If target is checked out in another worktree, stop and propose a safe explicit plan for that worktree; do not update its ref behind it. Require no concurrent Git operations affecting target or worktree occupancy during finalize; if that cannot be ensured, stop. Verify the approved base is an ancestor of the prepared commit and update the local target using `git update-ref refs/heads/<target> <prepared-sha> <base-sha>` so a changed local tip fails atomically. Push the exact prepared SHA with an explicit expected-old remote lease for the approved base (`git push --force-with-lease=refs/heads/<target>:<base-sha> <remote> <prepared-sha>:refs/heads/<target>`). The ancestry check is essential: the lease protects against races but alone permits a non-fast-forward. Never overwrite a changed remote or bypass the lease. A rejected push or other failure stops the workflow; report exact local and remote state and retain all source and intermediate branches. Confirm the remote target actually points to the prepared commit before cleanup. Record source SHA and target commit as squash evidence.
 
-Stop on a failed mutation or failed check and report the command, error, and current state. A squash conflict leaves a merge to resolve; report the unmerged paths and preserve that state rather than resetting, automatically resolving, committing, or continuing to push. Interpret expected negative inspection results (for example, `merge-base --is-ancestor` exiting 1) as evidence, not successful integration.
+## Cleanup and report
 
-Completion: the target push succeeded. Until then, preserve all source and intermediate branches.
+Only after successful verified integration (including a cleanup-only request with verified prior integration), delete the exact approved candidates. Before each deletion check its current tip and all worktrees; stop on changed tips or relevant remote state. Require no concurrent Git operations affecting candidate refs or worktree occupancy during local deletion; otherwise stop. Protect target, current branch, remote default, unrelated branches and branches checked out in any worktree. Use `git branch -d` where Git recognizes a merge. After a squash, `git branch -D` is permitted only for an explicitly approved branch whose contents were verified as integrated, or whose unique discarded work was explicitly disclosed and approved. Source ancestry alone does not prove all content survived the squash; inspect the integrated changes and retain uncertain branches. For each remote deletion use an explicit expected-tip lease, `git push --force-with-lease=refs/heads/<branch>:<approved-sha> <remote> :refs/heads/<branch>`, and stop if the server cannot enforce it. Stop on failure and report completed and remaining deletions.
 
-## 4. Delete only approved, integrated branches
-
-For cleanup-only operations, first verify that the approved target commit is already present on the remote. For a merge just completed, use its successful push as evidence.
-
-Before each deletion, verify the branch still points to the approved commit and is not checked out in any worktree. Protect the target, current branch, remote default branch, and unrelated branches. If a tip or relevant remote state changed, pause for a revised plan rather than expanding scope.
-
-Delete only the exact approved names:
-- Use `git branch -d <branch>` for branches Git recognizes as merged.
-- After a squash, `git branch -D <branch>` is permitted only for an explicitly approved branch whose contents were integrated, or whose unique discarded work was explicitly approved in step 2. An ancestor of the recorded squash source is integrated by that squash; a similar name is not proof.
-- Use `git push <remote> --delete <branch>` for approved remote branches. Recheck remote tips immediately before deletion; if an atomic expected-tip deletion is supported, prefer it so a concurrent update cannot be removed.
-
-Stop on deletion failure and report which deletions succeeded and which remain. Leave unrelated branches and worktrees untouched.
-
-Completion: every approved deletion succeeded, or a precise failure was reported without continuing.
-
-## 5. Report observed results
-
-Report the squash commit and push result (if applicable), deleted local/remote branches, retained uncertain branches, and only the verification actually run. On cancellation, report that nothing was changed. Keep the result concise; do not claim a check or push that was not observed.
+Remove the created worktree and mirror branch only if their removal was explicitly included in the approved plan, after checking that the worktree is clean and mirror still points to the prepared commit. Never force-remove a dirty worktree. Report the prepared commit, observed checks, integration and push result, deletions and retained branches. On cancellation distinguish unchanged repository from retained prepared state; never claim an unobserved check or push.
