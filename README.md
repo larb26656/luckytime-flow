@@ -27,6 +27,12 @@ npx skills add https://github.com/larb26656/luckytime-flow --skill design-previe
 | [design-preview](skills/engineering/design-preview/SKILL.md) | Discuss and refine an implementation approach with diagrams, file structure, steps, and short code sketches. Discussion-only: confirmation does not trigger implementation. |
 | [is-safe-to-remove](skills/engineering/is-safe-to-remove/SKILL.md) | Assess removal safety, dependencies, impact, risk, and confidence without changing or deleting anything; implementation is a separate task. |
 
+### Design Ops
+
+| Skill | Description |
+| --- | --- |
+| [extract-element](skills/design-ops/extract-element/SKILL.md) | Extract element bounds and text from images, then regenerate reusable visual assets with Codex imagegen. |
+
 ### Database
 
 | Skill | Description |

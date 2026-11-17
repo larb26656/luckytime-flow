@@ -1,0 +1,8 @@
+{
+  "skill_name": "extract-element",
+  "evals": [
+    {"id": 1, "prompt": "Extract the text, icon and product illustration from this UI screenshot. Regenerate visual assets with transparent backgrounds.", "expected_output": "Run directory with reviewed bounds, exact text, separate generated visuals and no duplicated group assets.", "files": []},
+    {"id": 2, "prompt": "แยก element จาก infographic นี้ เก็บข้อความภาษาไทยและลำดับการอ่านด้วย", "expected_output": "Thai transcription with uncertainty for unreadable parts, stable IDs, bounds preview and regenerated visual assets.", "files": []},
+    {"id": 3, "prompt": "Extract assets from this slide even if imagegen is unavailable.", "expected_output": "Preserved crops and text; explicit pending assets without claiming crops are regenerated images.", "files": []}
+  ]
+}
