@@ -1,5 +1,9 @@
 # luckytime-flow
 
+<p align="center">
+  <img src="assets/thumbnail.png" alt="luckytime-flow: a collection of reusable agent skills" width="700">
+</p>
+
 A collection of reusable agent skills, organized by topic.
 
 ## Install
