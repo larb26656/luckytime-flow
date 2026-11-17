@@ -16,6 +16,7 @@ Select the skills and agents when prompted. To install a specific skill, pass `-
 npx skills add https://github.com/larb26656/luckytime-flow --skill push
 npx skills add https://github.com/larb26656/luckytime-flow --skill squash-and-cleanup
 npx skills add https://github.com/larb26656/luckytime-flow --skill design-preview
+npx skills add https://github.com/larb26656/luckytime-flow --skill refactor-advice
 ```
 
 ## Skills
@@ -25,7 +26,9 @@ npx skills add https://github.com/larb26656/luckytime-flow --skill design-previe
 | Skill | Description |
 | --- | --- |
 | [design-preview](skills/engineering/design-preview/SKILL.md) | Discuss and refine an implementation approach with diagrams, file structure, steps, and short code sketches. Discussion-only: confirmation does not trigger implementation. |
+| [refactor-advice](skills/engineering/refactor-advice/SKILL.md) | Compare practical refactoring options grounded in existing code, with tradeoffs, impact, a recommendation, and incremental verification steps; advice-only by default. |
 | [is-safe-to-remove](skills/engineering/is-safe-to-remove/SKILL.md) | Assess removal safety, dependencies, impact, risk, and confidence without changing or deleting anything; implementation is a separate task. |
+| [trace-impact](skills/engineering/trace-impact/SKILL.md) | Trace the impact of function, interface, schema, or API changes through dependencies and callers, with source evidence and targeted test scenarios. |
 
 ### Design Ops
 

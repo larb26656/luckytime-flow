@@ -1,0 +1,49 @@
+{
+  "skill_name": "trace-impact",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "ใช้ evals/fixtures เป็นขอบเขต เปลี่ยน OrderStore.save จาก Promise<void> เป็น Promise<boolean> โดย false หมายถึงบันทึกไม่ได้ และ pay ต้องไม่ตอบสำเร็จถ้า save คืน false ช่วย trace impact พร้อมจุดทดสอบ ยังไม่แก้โค้ด",
+      "expected_output": "Trace both implementations, pay and POST route; explain ignored false, state mutation before save, and tests for false and thrown failures without inventing rollback semantics.",
+      "files": [
+        "evals/fixtures"
+      ],
+      "assertions": [
+        "Traces OrderStore.save through SqlOrderStore and MemoryOrderStore to pay and the POST route with source locations.",
+        "Explains that pay currently ignores the return value and the POST route returns 204 after a resolved false; identifies state mutation before save without assuming desired rollback behavior.",
+        "Proposes success, false-result, and thrown-error checks with expected outcomes; distinguishes existing in-memory success coverage from integration gaps.",
+        "Does not claim outbound db or memory signatures must change solely because save changes, and does not modify fixture files."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "ถ้าเปลี่ยน Order.status ใน evals/fixtures จะกระทบตรงไหนบ้าง? ยังไม่ได้ตัดสินใจว่าจะเพิ่มค่า CANCELLED หรือเปลี่ยนชื่อ PAID เป็น SETTLED ขอ dependencies, callers และจุดทดสอบ",
+      "expected_output": "Map both conditional change variants through persistence, UI, jobs, report, API contract and tests. Distinguish unrelated Worker.status and unknown deployment selection. Do not assume backfill for adding a value.",
+      "files": [
+        "evals/fixtures"
+      ],
+      "assertions": [
+        "Explicitly distinguishes adding CANCELLED from renaming PAID, rather than assuming one intended change.",
+        "Finds schema constraint, payment transition/writer, statusLabel default error, orderPage, dynamic exportOrders job, revenue predicate, and API schema with source evidence.",
+        "Excludes Worker.status, identifies unknown deployed job selection, and separates source facts from production-data or external-client unknowns.",
+        "Does not automatically require a backfill for adding CANCELLED; explains legacy/mixed-version considerations for renaming PAID.",
+        "Maps impact to concrete test scenarios and expected results, including persistence and label behavior, without claiming existing GET test validates response schema."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "จะเปลี่ยน GET /v1/orders/:id ใน evals/fixtures ให้ response ใช้ state แทน status โดยยังเก็บชื่อ field ใน domain/database เหมือนเดิม ไล่ผลกระทบกับแผนทดสอบให้หน่อย ไม่มี source ของ client ภายนอก",
+      "expected_output": "Trace JSON response and OpenAPI contract to orderPage, preserve domain field and unrelated paths, identify external consumers as unknown, propose compatibility rollout and assertion gaps.",
+      "files": [
+        "evals/fixtures"
+      ],
+      "assertions": [
+        "Finds response serializer, api.yaml status property/required list, and orderPage reading order.status, with source references.",
+        "Does not require renaming Order.status, database columns, pay, or report merely for a response-only change.",
+        "Identifies external consumers as unknown and proposes compatibility/deployment ordering without inventing clients or claiming complete coverage.",
+        "Notes the existing GET test only asserts HTTP 200, and proposes response contract and UI integration checks with concrete expected results.",
+        "Separates risk from evidence confidence, proposed verification from executed checks, and makes no fixture modifications."
+      ]
+    }
+  ]
+}

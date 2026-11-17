@@ -1,0 +1,41 @@
+{
+  "skill_name": "refactor-advice",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "เคสนี้ refactor ยังไงดี เสนอทางเลือกก่อน ยังไม่แก้โค้ดนะ มี snippet นี้จาก checkout: async function checkout(cart, deps) { let total = 0; for (const item of cart.items) total += item.price * item.qty; if (cart.customer.tier === 'gold') total *= 0.9; await deps.orders.save({ customerId: cart.customer.id, total }); await deps.mail.send(cart.customer.email, total); return total; } ทีมกำลังจะเพิ่มช่องทางแจ้งเตือน แต่ยังมี email อย่างเดียว และถ้าส่ง mail fail ตอนนี้ checkout ก็ reject แม้ save ไปแล้ว",
+      "expected_output": "Thai advice comparing practical local extraction and responsibility-placement alternatives, recommending a proportionate option, and preserving or explicitly separating the existing save-before-mail and rejection behavior. Treat caller and transaction details as unknown. Avoid inventing a notification framework or implementing changes.",
+      "files": [],
+      "expectations": [
+        "Compares meaningfully different options and states their costs, remaining limitations, and conditions for choosing them.",
+        "Identifies save-before-mail and rejection after persistence as existing behavior; does not silently change it to fire-and-forget or swallow errors.",
+        "Grounds the recommendation in the current notification requirement without assuming multiple providers already exist.",
+        "Gives incremental steps and focused proposed checks, distinguishing snippet evidence from unknown repository context.",
+        "Does not edit project files or generate a complete replacement implementation."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "ช่วยเสนอทางเลือก refactor สองฟังก์ชันนี้หน่อย: function shippingFee(subtotal) { return subtotal >= 1000 ? 0 : 50; } function giftWrapFee(subtotal) { return subtotal >= 1000 ? 0 : 50; } ตอนนี้เลขเหมือนกัน แต่ shipping เป็นโปรส่งฟรี ส่วน gift wrap เป็นแคมเปญคนละทีม เดือนหน้าอาจเปลี่ยนแยกกัน ควรทำ generic calculateFee ไหม อยากให้ง่ายต่อการดูแล",
+      "expected_output": "A concise Thai recommendation that can retain separate business rules despite identical code. Compares consolidation against keeping independence with concrete tradeoffs, avoids ceremonial abstractions, and states when shared policy would justify consolidation.",
+      "files": [],
+      "expectations": [
+        "Recognizes independent business ownership and potential divergent changes rather than equating matching syntax with a shared rule.",
+        "Includes keeping the current implementation as a viable option and avoids a forced large redesign.",
+        "Explains when consolidation would become appropriate and suggests checks for each rule's threshold if changes are made.",
+        "Does not change files or claim tests were run."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "บริบท: ก่อนหน้านี้เสนอ A แยก calculateTotal แบบ pure function ในไฟล์เดิม กับ B สร้าง PricingService กลางใช้หลาย checkout ยังไม่ได้แก้อะไร มี consumer เดียวและยังไม่พบกฎซ้ำ ข้อความล่าสุด: โอเคเห็นด้วยกับ A แต่ถ้าปีหน้ามีหลาย checkout ควรเปลี่ยนไป B ตอนไหน ขอเหตุผลสั้น ๆ",
+      "expected_output": "A focused Thai follow-up explaining evidence-based conditions for centralizing a shared pricing policy. Treats agreement as discussion, preserves the existing recommendation, and avoids speculative implementation or replaying the full report.",
+      "files": [],
+      "expectations": [
+        "Does not interpret agreement with A as an implementation request.",
+        "Names concrete triggers such as shared business semantics and repeated coordinated changes, rather than the calendar or consumer count alone.",
+        "Answers briefly without repeating the complete original comparison or creating files."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+CREATE TABLE orders (
+  id TEXT PRIMARY KEY,
+  status TEXT NOT NULL CHECK (status IN ('PENDING', 'PAID')),
+  amount NUMERIC NOT NULL DEFAULT 0
+);
